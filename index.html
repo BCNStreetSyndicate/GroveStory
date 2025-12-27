@@ -3,695 +3,1480 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NOTES FROM CATALONIA — Три куста, один кабан</title>
-  <meta name="description" content="Три куста, один кабан и партизанский аутдор: хроника того, как школьники решили 'поиграть в лес' под Барселоной — и что из этого вышло." />
+  <title>NOTES FROM CATALONIA — Три куста, один кабан, ноль шансов</title>
+  <meta name="description" content="Панк-лонгрид: как школьники решили посадить 3 куста в лесу под Барселоной — и почему лес в Каталонии всегда выигрывает." />
+
   <style>
     :root{
-      --bg: #0b0d12;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.08);
-      --text: rgba(255,255,255,.90);
-      --muted: rgba(255,255,255,.62);
-      --faint: rgba(255,255,255,.40);
-      --line: rgba(255,255,255,.12);
-      --accent: #a7ff5a;
-      --accent2: #7dd3fc;
-      --danger: #ff5a7a;
-      --shadow: 0 12px 30px rgba(0,0,0,.40);
-      --radius: 18px;
-      --radius2: 26px;
+      --bg: #05050a;
+      --ink: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --faint: rgba(255,255,255,.45);
+      --line: rgba(255,255,255,.14);
+
+      --acid: #b6ff2e;
+      --pink: #ff3bd4;
+      --cyan: #38d6ff;
+      --yellow: #ffd84a;
+      --blood: #ff3b3b;
+      --orange: #ff9a3b;
+
+      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --r: 18px;
+      --r2: 28px;
+
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       --serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-    }
-    [data-theme="light"]{
-      --bg: #f7f7fb;
-      --panel: rgba(10,12,18,.06);
-      --panel2: rgba(10,12,18,.08);
-      --text: rgba(10,12,18,.90);
-      --muted: rgba(10,12,18,.65);
-      --faint: rgba(10,12,18,.42);
-      --line: rgba(10,12,18,.12);
-      --shadow: 0 16px 40px rgba(10,12,18,.10);
+
+      /* динамика VHS */
+      --paranoia: 0; /* 0..100 */
+      --vhs: 1;      /* 0/1 */
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      background:
-        radial-gradient(1200px 600px at 80% -10%, rgba(125,211,252,.25), transparent 60%),
-        radial-gradient(900px 500px at 10% 0%, rgba(167,255,90,.18), transparent 60%),
-        radial-gradient(900px 700px at 90% 70%, rgba(255,90,122,.14), transparent 55%),
-        var(--bg);
-      color:var(--text);
       font-family:var(--sans);
-      line-height:1.65;
+      color:var(--ink);
+      line-height:1.72;
+      background:
+        radial-gradient(900px 420px at 10% -10%, rgba(255,59,212,.22), transparent 60%),
+        radial-gradient(900px 520px at 90% 0%, rgba(56,214,255,.20), transparent 60%),
+        radial-gradient(900px 620px at 40% 110%, rgba(182,255,46,.16), transparent 60%),
+        radial-gradient(520px 420px at 80% 70%, rgba(255,216,74,.10), transparent 60%),
+        linear-gradient(180deg, #070712, #04040a 30%, #05050a);
+      overflow-x:hidden;
     }
 
-    /* Progress bar */
+    /* grain */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.11;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      z-index:1;
+    }
+
+    /* scratches */
+    body::after{
+      content:"";
+      position:fixed; inset:-20px;
+      pointer-events:none;
+      opacity:.08;
+      background:
+        repeating-linear-gradient(105deg, rgba(255,255,255,.22) 0 1px, transparent 1px 28px),
+        repeating-linear-gradient(195deg, rgba(255,255,255,.14) 0 1px, transparent 1px 34px);
+      mix-blend-mode:soft-light;
+      z-index:1;
+      transform: rotate(-1deg);
+    }
+
+    /* ===== VHS OVERLAY (сканлайны + виньетка + “кривые каналы”) ===== */
+    .vhs{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:70; /* над всем контентом, но под лайтбоксом/тостами */
+      opacity: calc(.12 + (var(--paranoia) * .004));
+      mix-blend-mode: overlay;
+      display:block;
+    }
+    /* выключатель */
+    body[data-vhs="0"] .vhs{ display:none; }
+
+    .vhs::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,.06) 0px,
+          rgba(255,255,255,.06) 1px,
+          transparent 2px,
+          transparent 5px
+        );
+      opacity: .75;
+    }
+    .vhs::after{
+      content:"";
+      position:absolute; inset:-20px;
+      background:
+        radial-gradient(closest-side, rgba(0,0,0,.0), rgba(0,0,0,.35)),
+        linear-gradient(90deg,
+          rgba(56,214,255,.10),
+          transparent 30%,
+          transparent 70%,
+          rgba(255,59,212,.10)
+        );
+      filter: blur(0.4px);
+      opacity:.9;
+      transform: translateZ(0);
+    }
+
+    /* Небольшая “дрожь” всего сайта, усиливается паранойей */
+    .shakeWrap{
+      position:relative;
+      transform: translateZ(0);
+      will-change: transform, filter;
+    }
+    body[data-vhs="1"] .shakeWrap{
+      animation: vhsJitter calc(1.6s - (var(--paranoia) * 0.008s)) infinite linear;
+      filter: saturate(calc(1 + (var(--paranoia) * .005))) contrast(calc(1 + (var(--paranoia) * .004)));
+    }
+    @keyframes vhsJitter{
+      0% { transform: translate(0,0); }
+      7% { transform: translate(0.2px,-0.3px); }
+      14% { transform: translate(-0.3px,0.2px); }
+      21% { transform: translate(0.4px,0.1px); }
+      28% { transform: translate(-0.2px,-0.4px); }
+      35% { transform: translate(0.5px,-0.1px); }
+      42% { transform: translate(-0.4px,0.3px); }
+      49% { transform: translate(0.2px,0.4px); }
+      56% { transform: translate(-0.5px,-0.2px); }
+      63% { transform: translate(0.3px,-0.5px); }
+      70% { transform: translate(-0.2px,0.2px); }
+      77% { transform: translate(0.4px,0.3px); }
+      84% { transform: translate(-0.3px,-0.2px); }
+      91% { transform: translate(0.2px,-0.2px); }
+      100%{ transform: translate(0,0); }
+    }
+
+    /* progress */
     .progress{
       position:fixed; inset:0 0 auto 0;
-      height:3px;
+      height:4px; z-index:90;
       background:transparent;
-      z-index:50;
     }
-    .progress > i{
+    .progress i{
       display:block; height:100%;
       width:0%;
-      background:linear-gradient(90deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 18px rgba(167,255,90,.35);
+      background:linear-gradient(90deg, var(--acid), var(--pink), var(--cyan));
+      box-shadow:0 0 20px rgba(182,255,46,.25);
     }
 
-    /* Topbar */
+    /* topbar */
     .topbar{
       position:sticky; top:0;
-      z-index:40;
+      z-index:80;
       backdrop-filter: blur(12px);
-      background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,0));
+      background: linear-gradient(180deg, rgba(0,0,0,.72), rgba(0,0,0,0));
       border-bottom:1px solid var(--line);
     }
-    [data-theme="light"] .topbar{
-      background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,0));
-    }
     .topbar-inner{
-      max-width:1100px;
+      max-width:1180px;
       margin:0 auto;
-      padding:14px 18px;
+      padding:12px 16px;
       display:flex;
-      gap:12px;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
+      gap:12px;
     }
     .brand{
-      display:flex; gap:12px; align-items:baseline;
-      letter-spacing:.12em;
+      display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+      letter-spacing:.18em;
       text-transform:uppercase;
-      font-weight:700;
-    }
-    .brand b{font-size:12px; color:var(--muted)}
-    .brand span{
+      font-weight:900;
       font-size:12px;
+    }
+    .brand .tag{
+      letter-spacing:.06em;
+      font-weight:800;
       padding:4px 10px;
-      border:1px solid var(--line);
       border-radius:999px;
-      background:var(--panel);
+      border:1px dashed rgba(255,255,255,.20);
+      background:rgba(255,255,255,.05);
       color:var(--muted);
     }
-    .actions{
-      display:flex; gap:10px; align-items:center;
-    }
+
+    .actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .btn{
-      border:1px solid var(--line);
-      background:var(--panel);
-      color:var(--text);
-      padding:9px 12px;
-      border-radius:999px;
       cursor:pointer;
-      box-shadow: none;
-      transition:.2s transform, .2s background, .2s border-color;
-      font-size:13px;
+      border-radius:999px;
+      padding:9px 12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);
+      color:var(--ink);
+      transition:.15s transform, .15s background, .15s border-color, .15s filter;
       display:flex; align-items:center; gap:8px;
+      font-size:13px;
+      user-select:none;
     }
-    .btn:hover{ transform: translateY(-1px); background:var(--panel2); border-color: rgba(255,255,255,.22) }
-    [data-theme="light"] .btn:hover{ border-color: rgba(10,12,18,.22) }
+    .btn:hover{
+      transform: translateY(-1px) rotate(-.2deg);
+      background:rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.30);
+      filter:saturate(1.1);
+    }
     .btn kbd{
       font-family:var(--mono);
       font-size:12px;
-      color:var(--muted);
-      border:1px solid var(--line);
       padding:2px 6px;
       border-radius:8px;
-      background:rgba(0,0,0,.10);
+      border:1px solid rgba(255,255,255,.16);
+      color:var(--muted);
+      background:rgba(0,0,0,.22);
     }
-    [data-theme="light"] .btn kbd{ background: rgba(10,12,18,.05) }
 
-    /* Layout */
+    /* layout */
     .wrap{
-      max-width:1100px;
+      position:relative; z-index:2;
+      max-width:1180px;
       margin:0 auto;
-      padding:28px 18px 80px;
+      padding:22px 16px 90px;
       display:grid;
-      grid-template-columns: 1fr 320px;
-      gap:18px;
+      grid-template-columns: 1fr 360px;
+      gap:16px;
     }
-    @media (max-width: 980px){
-      .wrap{ grid-template-columns: 1fr; }
-      .aside{ order:-1 }
+    @media (max-width: 1020px){
+      .wrap{ grid-template-columns:1fr; }
+      .aside{ order:-1; position:relative !important; top:auto !important; }
     }
 
-    /* Hero */
-    .hero{
-      border:1px solid var(--line);
-      background: linear-gradient(180deg, var(--panel2), var(--panel));
-      border-radius: var(--radius2);
+    /* cards */
+    .card{
+      border-radius:var(--r);
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
       box-shadow: var(--shadow);
-      padding:26px;
       overflow:hidden;
       position:relative;
     }
-    .hero:before{
-      content:"";
-      position:absolute; inset:-2px;
+    .pad{ padding:18px; }
+
+    /* hero */
+    .hero{
+      border-radius:var(--r2);
+      border:1px solid rgba(255,255,255,.16);
       background:
-        radial-gradient(600px 240px at 30% 0%, rgba(167,255,90,.18), transparent 60%),
-        radial-gradient(620px 240px at 90% 30%, rgba(125,211,252,.18), transparent 60%),
-        radial-gradient(520px 240px at 70% 100%, rgba(255,90,122,.14), transparent 60%);
-      pointer-events:none;
-      filter:saturate(1.1);
+        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.05)),
+        radial-gradient(600px 240px at 20% 0%, rgba(255,59,212,.20), transparent 60%),
+        radial-gradient(600px 260px at 80% 10%, rgba(56,214,255,.18), transparent 60%),
+        radial-gradient(700px 260px at 60% 120%, rgba(182,255,46,.14), transparent 60%);
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
-    .hero > *{ position:relative; z-index:1 }
+    .hero .pad{ padding:22px; }
     .kicker{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
       color:var(--muted);
       font-size:13px;
     }
     .pill{
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.10);
+      padding:5px 10px;
       border-radius:999px;
-      padding:4px 10px;
+      border:1px dashed rgba(255,255,255,.22);
+      background:rgba(0,0,0,.20);
     }
-    [data-theme="light"] .pill{ background: rgba(10,12,18,.05) }
     .title{
-      margin:10px 0 10px;
-      font-family: var(--serif);
-      font-size: clamp(28px, 3.2vw, 44px);
-      line-height:1.12;
-      letter-spacing: -.02em;
+      margin:12px 0 10px;
+      font-family:var(--serif);
+      font-size: clamp(30px, 3.6vw, 52px);
+      line-height:1.06;
+      letter-spacing:-.02em;
+      text-shadow: 0 6px 20px rgba(0,0,0,.40);
     }
     .subtitle{
       margin:0;
+      max-width:78ch;
       color:var(--muted);
-      max-width:70ch;
       font-size:16px;
     }
-    .meta{
-      margin-top:16px;
-      display:flex; gap:14px; flex-wrap:wrap; align-items:center;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .meta a{ color:inherit; text-decoration:none; border-bottom:1px dashed var(--line) }
-    .meta a:hover{ border-bottom-color: var(--accent) }
 
-    /* Article */
-    .card{
-      border:1px solid var(--line);
-      background:var(--panel);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:20px;
+    .stamp{
+      position:absolute;
+      left:14px; top:14px;
+      transform: rotate(-9deg);
+      padding:8px 10px;
+      border-radius:12px;
+      border:2px solid rgba(255,59,59,.9);
+      color:rgba(255,59,59,.95);
+      background:rgba(0,0,0,.25);
+      font-family:var(--mono);
+      font-weight:900;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      box-shadow: 0 14px 34px rgba(0,0,0,.35);
     }
-    .article{
-      padding:24px;
+    .sticker{
+      position:absolute;
+      right:16px;
+      top:12px;
+      transform: rotate(6deg);
+      background: linear-gradient(180deg, rgba(255,216,74,.95), rgba(255,216,74,.75));
+      color:#121212;
+      font-weight:950;
+      border-radius:14px;
+      padding:10px 12px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      border:2px solid rgba(0,0,0,.65);
+      max-width: 220px;
     }
+    .sticker small{
+      display:block;
+      opacity:.85;
+      font-weight:900;
+      margin-top:6px;
+      font-family:var(--mono);
+      font-size:12px;
+    }
+
+    .glitch{
+      position:relative;
+      display:inline-block;
+    }
+    .glitch::before, .glitch::after{
+      content: attr(data-text);
+      position:absolute; left:0; top:0;
+      opacity:.55;
+      pointer-events:none;
+      mix-blend-mode:screen;
+    }
+    .glitch::before{ transform: translate(1px,-1px); color: var(--cyan); }
+    .glitch::after{ transform: translate(-1px,1px); color: var(--pink); }
+
+    /* article */
+    .article{ padding:20px; }
     .article h2{
-      margin:28px 0 10px;
-      font-size:20px;
+      margin:26px 0 10px;
+      font-size:18px;
       letter-spacing:-.01em;
     }
-    .article p{ margin:12px 0; color:var(--text) }
-    .article p.muted{ color:var(--muted) }
-    .article .lead{
-      font-size:18px;
-      color:var(--text);
-      margin-top:6px;
-    }
+    .lead{ font-size:18px; margin:0 0 10px; }
+    .muted{ color:var(--muted); }
     .divider{
-      height:1px; background:var(--line);
-      margin:22px 0;
-    }
-
-    /* Pullquote */
-    .quote{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
       margin:18px 0;
-      padding:18px 18px;
-      border-radius: var(--radius);
-      border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(167,255,90,.10), rgba(255,255,255,.02));
     }
-    [data-theme="light"] .quote{ background: linear-gradient(180deg, rgba(167,255,90,.12), rgba(10,12,18,.02)) }
-    .quote b{ color:var(--accent) }
-    .quote p{ margin:0; color:var(--text) }
-    .quote small{ display:block; margin-top:10px; color:var(--muted) }
-
-    /* Timeline */
-    .timeline{ margin:16px 0 0; padding:0; list-style:none }
-    .timeline li{
-      display:grid;
-      grid-template-columns: 120px 1fr;
-      gap:14px;
-      padding:14px 0;
-      border-top:1px solid var(--line);
+    .quote{
+      margin:16px 0;
+      padding:16px;
+      border-radius: var(--r);
+      border:1px solid rgba(255,255,255,.16);
+      background:
+        linear-gradient(180deg, rgba(255,59,212,.10), rgba(255,255,255,.03));
+      position:relative;
+      overflow:hidden;
     }
-    .timeline li:first-child{ border-top:0 }
-    .when{
+    .quote:before{
+      content:"";
+      position:absolute; inset:-40px;
+      background: radial-gradient(closest-side, rgba(182,255,46,.12), transparent 60%);
+      transform: rotate(9deg);
+      pointer-events:none;
+    }
+    .quote b{ color:var(--acid) }
+    .quote p{ margin:0; position:relative; }
+    .quote small{ display:block; margin-top:10px; color:var(--muted); position:relative; }
+    .callout{
+      border-radius: var(--r);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.24);
+      padding:14px;
+      margin:14px 0;
+      position:relative;
+    }
+    .callout .badge{
+      display:inline-flex; gap:8px; align-items:center;
       font-family:var(--mono);
-      color:var(--muted);
+      font-weight:950;
       font-size:12px;
-      padding-top:2px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color: #0b0b0f;
+      background: linear-gradient(90deg, var(--acid), var(--cyan));
+      padding:5px 9px;
+      border-radius:999px;
     }
-    .what h3{
-      margin:0 0 6px;
-      font-size:15px;
+    .callout p{ margin:10px 0 0; color:var(--muted); }
+
+    /* images */
+    figure{ margin:16px 0; }
+    .photo{
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.04);
+      box-shadow: 0 16px 44px rgba(0,0,0,.45);
+      position:relative;
     }
-    .what p{
-      margin:0;
+    .photo img{
+      width:100%;
+      display:block;
+      cursor: zoom-in;
+      /* VHS “RGB split” усиливается паранойей */
+      filter:
+        contrast(calc(1.04 + var(--paranoia) * .001))
+        saturate(calc(1.12 + var(--paranoia) * .002))
+        drop-shadow(calc(var(--paranoia) * 0.02px) 0 rgba(56,214,255,.35))
+        drop-shadow(calc(var(--paranoia) * -0.02px) 0 rgba(255,59,212,.35));
+    }
+    figcaption{
+      padding:10px 12px;
       color:var(--muted);
-      font-size:14px;
+      font-size:13px;
+      border-top:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .scribble{
+      position:absolute;
+      left:12px; top:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px dashed rgba(255,255,255,.28);
+      background: rgba(0,0,0,.22);
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--muted);
+      transform: rotate(-2deg);
+    }
+    .scribble strong{ color: var(--yellow); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (max-width: 540px){ .grid{ grid-template-columns:1fr; } }
+    .thumb{
+      border-radius: 16px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.04);
+      position:relative;
+    }
+    .thumb img{
+      width:100%;
+      height:185px;
+      object-fit:cover;
+      display:block;
+      cursor:zoom-in;
+      transition:.18s transform;
+      filter:
+        contrast(calc(1.02 + var(--paranoia) * .001))
+        saturate(calc(1.08 + var(--paranoia) * .002));
+    }
+    .thumb:hover img{ transform:scale(1.03) rotate(.1deg); }
+    .thumb span{
+      position:absolute;
+      left:10px; bottom:10px;
+      padding:5px 9px;
+      border-radius:999px;
+      font-family:var(--mono);
+      font-size:12px;
+      background: rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.18);
+      color:var(--muted);
+      backdrop-filter: blur(8px);
     }
 
-    /* Aside */
+    /* aside */
     .aside{
       position:sticky;
-      top:72px;
+      top:70px;
       align-self:start;
       display:flex;
       flex-direction:column;
       gap:12px;
     }
-    @media (max-width: 980px){
-      .aside{ position:relative; top:auto }
-    }
     .toc h3{
       margin:0 0 10px;
-      font-size:14px;
-      letter-spacing:.08em;
+      font-size:12px;
+      letter-spacing:.18em;
       text-transform:uppercase;
       color:var(--muted);
     }
     .toc a{
       display:block;
       padding:10px 12px;
-      border-radius: 12px;
-      color:var(--text);
+      border-radius:14px;
       text-decoration:none;
+      color:var(--ink);
       border:1px solid transparent;
-      transition:.15s background, .15s border-color;
+      transition:.14s background, .14s border-color, .14s transform;
     }
     .toc a:hover{
-      background:var(--panel2);
-      border-color: var(--line);
+      background:rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+      transform: translateY(-1px);
     }
     .toc a.active{
-      background: linear-gradient(180deg, rgba(125,211,252,.12), rgba(167,255,90,.10));
-      border-color: rgba(125,211,252,.35);
+      background: linear-gradient(90deg, rgba(182,255,46,.12), rgba(255,59,212,.10));
+      border-color: rgba(182,255,46,.35);
     }
 
-    /* Fact box */
-    .facts{
-      display:grid;
-      gap:10px;
-    }
-    .fact{
-      border:1px solid var(--line);
-      background:var(--panel);
-      border-radius: var(--radius);
+    /* RPG HUD */
+    .hud{
       padding:14px;
+      background: rgba(0,0,0,.26);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius: var(--r);
     }
-    .fact .label{
-      font-size:12px;
-      letter-spacing:.10em;
+    .hud .hdr{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-family:var(--mono);
       text-transform:uppercase;
+      letter-spacing:.12em;
+      font-weight:950;
+      font-size:12px;
       color:var(--muted);
     }
-    .fact .value{
-      margin-top:8px;
-      font-size:14px;
-      color:var(--text);
+    .hud .hdr .live{
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:var(--yellow);
     }
-    .danger{
-      color: var(--danger);
-      font-weight:700;
+    .bars{ margin-top:10px; display:grid; gap:10px; }
+    .barrow{ display:grid; gap:6px; }
+    .barrow .label{
+      display:flex; justify-content:space-between; gap:10px;
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--muted);
+    }
+    .meter{
+      height:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+    .meter i{
+      display:block;
+      height:100%;
+      width:100%;
+      background: linear-gradient(90deg, var(--acid), var(--cyan));
+      transition: width .35s ease;
+    }
+    .meter.boar i{
+      background: linear-gradient(90deg, var(--orange), var(--blood));
+      box-shadow: 0 0 22px rgba(255,59,59,.25);
+    }
+    .debuffs{
+      margin-top:12px;
+      display:flex; flex-wrap:wrap; gap:8px;
+    }
+    .chip{
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px dashed rgba(255,255,255,.18);
+    }
+    .chip.bad{ border-color: rgba(255,59,59,.35); color: rgba(255,216,74,.95); }
+    .chip.good{ border-color: rgba(182,255,46,.35); color: rgba(182,255,46,.95); }
+
+    /* paranoia slider */
+    .parabox{
+      margin-top:12px;
+      padding:12px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .parabox .k{
+      font-family:var(--mono);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-weight:950;
+      font-size:11px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+    .parabox .k b{ color: var(--yellow); }
+    .parabox input[type="range"]{
+      width:100%;
+      margin-top:10px;
+      accent-color: var(--yellow);
+    }
+    .parabox .hint{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
     }
 
-    /* Footer */
+    /* meme counters */
+    .counters{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .counter{
+      padding:12px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .counter .k{
+      font-family:var(--mono);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-weight:950;
+      font-size:11px;
+      color:var(--muted);
+    }
+    .counter .v{
+      margin-top:6px;
+      font-size:22px;
+      font-weight:950;
+      letter-spacing:-.02em;
+    }
+
+    /* BOAR ALERT banner */
+    .boarAlert{
+      position:fixed;
+      left:50%;
+      transform: translateX(-50%);
+      top:62px;
+      z-index:120;
+      display:none;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 50px rgba(0,0,0,.55);
+      max-width: min(980px, 92vw);
+    }
+    .boarAlert.show{ display:flex; }
+    .sir{
+      width:12px; height:12px;
+      border-radius: 999px;
+      background: var(--blood);
+      box-shadow: 0 0 20px rgba(255,59,59,.35);
+      animation: blink .6s infinite;
+    }
+    @keyframes blink{ 0%,50%{ opacity:1 } 51%,100%{ opacity:.25 } }
+    .boarAlert b{
+      font-family:var(--mono);
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color: var(--yellow);
+      font-weight:950;
+      font-size:12px;
+    }
+    .boarAlert span{
+      color: var(--muted);
+      font-size:13px;
+    }
+    .boarAlert .x{
+      margin-left:auto;
+      cursor:pointer;
+      border-radius:12px;
+      padding:6px 10px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:var(--ink);
+      font-family:var(--mono);
+    }
+
+    /* toast bubbles */
+    .toast{
+      position:fixed;
+      z-index:140;
+      left:18px;
+      bottom:18px;
+      display:none;
+      max-width:min(520px, 92vw);
+      border-radius:18px;
+      background: rgba(0,0,0,.70);
+      border:1px solid rgba(255,255,255,.18);
+      padding:12px 12px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.65);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+    .toast.show{ display:block; animation: pop .22s ease; }
+    @keyframes pop{ from{ transform: translateY(8px); opacity:0 } to{ transform: translateY(0); opacity:1 } }
+    .toast .top{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+    }
+    .toast .who{
+      display:flex; gap:10px; align-items:center;
+      font-family:var(--mono);
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      font-weight:950;
+      font-size:12px;
+      color: var(--yellow);
+    }
+    .toast .who .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(90deg, var(--acid), var(--pink));
+      box-shadow:0 0 18px rgba(255,59,212,.20);
+    }
+    .toast .close{
+      cursor:pointer;
+      border-radius:12px;
+      padding:6px 10px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:var(--ink);
+      font-family:var(--mono);
+    }
+    .toast p{ margin:10px 0 0; color:var(--muted); }
+    .toast .mini{
+      margin-top:10px;
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .toast .mini .chip{ background: rgba(255,255,255,.04); }
+
+    /* lightbox */
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.86);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:200;
+      padding:18px;
+    }
+    .lightbox.open{ display:flex; }
+    .lightbox .box{
+      max-width:min(1020px, 96vw);
+      max-height: 86vh;
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.20);
+      box-shadow: 0 20px 60px rgba(0,0,0,.65);
+      background: rgba(15,15,20,.7);
+    }
+    .lightbox img{
+      display:block;
+      width:100%;
+      height:auto;
+      max-height: 78vh;
+      object-fit:contain;
+      background:#0c0c10;
+    }
+    .lightbox .cap{
+      padding:10px 12px;
+      color:var(--muted);
+      border-top:1px solid rgba(255,255,255,.12);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      font-size:13px;
+    }
+    .xbtn{
+      cursor:pointer;
+      border-radius:12px;
+      padding:6px 10px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:var(--ink);
+      font-family:var(--mono);
+    }
+
     footer{
-      max-width:1100px;
+      position:relative; z-index:2;
+      max-width:1180px;
       margin:0 auto;
-      padding:0 18px 40px;
+      padding:0 16px 36px;
       color:var(--muted);
       font-size:13px;
     }
     footer .foot{
-      border-top:1px solid var(--line);
-      padding-top:18px;
+      border-top:1px solid rgba(255,255,255,.14);
+      padding-top:16px;
       display:flex;
       flex-wrap:wrap;
       gap:10px;
       justify-content:space-between;
     }
-
-    /* Small helper */
-    .tagrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px }
-    .tag{
-      font-size:12px;
-      color:var(--muted);
-      border:1px solid var(--line);
-      padding:4px 10px;
-      border-radius:999px;
-      background: rgba(0,0,0,.08);
-    }
-    [data-theme="light"] .tag{ background: rgba(10,12,18,.04) }
   </style>
 </head>
 
-<body>
-  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+<body data-vhs="1">
+  <div class="progress"><i id="bar"></i></div>
+  <div class="vhs" aria-hidden="true"></div>
+
+  <!-- BOAR ALERT -->
+  <div class="boarAlert" id="boarAlert" role="status" aria-live="polite">
+    <div class="sir"></div>
+    <b>BOAR ALERT</b>
+    <span>Ты приближаешься к главе “Ураган, ночь и кабан”. Сохраняйся. (Лес не обязан быть дружелюбным.)</span>
+    <button class="x" id="boarAlertClose" type="button">OK</button>
+  </div>
+
+  <!-- MEME TOAST -->
+  <div class="toast" id="toast" aria-live="polite">
+    <div class="top">
+      <div class="who"><span class="dot"></span><span id="toastWho">ЛЕС.COM</span></div>
+      <button class="close" id="toastClose" type="button">закрыть</button>
+    </div>
+    <p id="toastText">…</p>
+    <div class="mini" id="toastMini"></div>
+  </div>
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand" title="Журнал заметок из Каталонии">
-        <b>NOTES FROM CATALONIA</b>
-        <span>лес • подростковая глупость • кабан</span>
+      <div class="brand">
+        <span>NOTES FROM CATALONIA</span>
+        <span class="tag">панк-лонгрид • лес • кабан • последствия</span>
       </div>
       <div class="actions">
-        <button class="btn" id="toggleTheme" type="button" title="Сменить тему (T)">
-          🌓 <span>тема</span> <kbd>T</kbd>
-        </button>
-        <button class="btn" id="copyLink" type="button" title="Скопировать ссылку на текущий раздел (L)">
-          🔗 <span>ссылка</span> <kbd>L</kbd>
-        </button>
+        <button class="btn" id="copyLink" type="button" title="Скопировать ссылку (L)">🔗 ссылка <kbd>L</kbd></button>
+        <button class="btn" id="goGallery" type="button" title="К фоткам (G)">🖼️ фотки <kbd>G</kbd></button>
+        <button class="btn" id="spawnToast" type="button" title="Рандом-коммент (M)">💬 мем-коммент <kbd>M</kbd></button>
+        <button class="btn" id="toggleVHS" type="button" title="VHS-режим (V)">📼 VHS <kbd>V</kbd></button>
       </div>
     </div>
   </header>
 
-  <main class="wrap">
-    <section>
-      <article class="hero" id="top">
-        <div class="kicker">
-          <span class="pill">История</span>
-          <span class="pill">Барселона → Les Planes</span>
-          <span class="pill">жанр: «выживание без навыков»</span>
-        </div>
+  <div class="shakeWrap" id="shakeWrap">
+    <main class="wrap">
+      <section>
+        <article class="hero card" id="top">
+          <div class="pad">
+            <div class="stamp">DO NOT TRY AT HOME*</div>
+            <div class="sticker">
+              БОСС-ФАЙТ:<br><span class="glitch" data-text="КАБАН">КАБАН</span>
+              <small>уровень сложности: «мокрая смерть»</small>
+            </div>
 
-        <h1 class="title">Три куста, один кабан и партизанский аутдор:<br/>что бывает, когда школьники решают «ну а чё бы нет»</h1>
+            <div class="kicker">
+              <span class="pill">История из леса</span>
+              <span class="pill">Барселона → Les Planes</span>
+              <span class="pill">жанр: «гениальные решения подростков»</span>
+            </div>
 
-        <p class="subtitle">
-          Зима. Денег нет. Опыта — тоже. Зато есть идея, которая приходит сама — как все идеи, после которых ты говоришь:
-          «ну, зато будет что вспоминать».
-        </p>
+            <h1 class="title">Три куста, один кабан и партизанский аутдор:<br/>как лес под Барселоной сделал вам “воспитательную работу”</h1>
 
-        <div class="meta">
-          <span>Автор: <a href="#author">@saintvoid911</a></span>
-          <span>Формат: заметки / хроника провала</span>
-          <span class="danger">Дисклеймер:</span>
-          <span>это не руководство, а рассказ о том, как не надо — и почему лес иногда против.</span>
-        </div>
+            <p class="subtitle">
+              Зима. Начало года. Денег — как у школьника. Опыта — как у школьника.
+              Зато уверенности… как у школьника, который прочитал два поста и уже “в теме”.
+            </p>
 
-        <div class="tagrow">
-          <span class="tag">#каталония</span>
-          <span class="tag">#школьники_и_решения</span>
-          <span class="tag">#кабан_как_воспитатель</span>
-          <span class="tag">#память_на_всю_жизнь</span>
-        </div>
-      </article>
+            <div class="callout" style="margin-top:14px;">
+              <span class="badge">*Дисклеймер</span>
+              <p>Это не руководство и не “как надо”. Это хроника того, как “ну а чё бы нет” превращается в “мам, я живой”.</p>
+            </div>
+          </div>
+        </article>
 
-      <div class="card article" id="story">
-        <p class="lead">
-          Когда нормальные люди в начале года думают про учёбу, двое школьников думают про «хочется шкиле и денег».
-          И где-то между мечтой и реальностью появляется план: <b>«сделаем всё в лесу»</b>.
-        </p>
-
-        <div class="quote">
-          <p><b>Правило вселенной:</b> если идея пришла «сама» — значит, пришла не одна. С ней ещё придут последствия.</p>
-          <small>— внутренний голос, который отвечает за провалы и иногда за сюжет</small>
-        </div>
-
-        <div class="divider"></div>
-
-        <h2 id="step0">Шаг 0 — Идея (и первая ошибка)</h2>
-        <p>
-          Идея была простая, как табуретка: «в лесу никто не увидит».  
-          В голове это выглядело как кино: зелень, тишина, романтика, природа сотрудничает.
-        </p>
-        <p class="muted">
-          В реальности природа в Каталонии не сотрудничает. Она ставит лайк только тем, кто умеет выживать.
-        </p>
-
-        <h2 id="montseny">Глава 1 — Montseny: красиво, но земля как характер у налоговой</h2>
-        <p>
-          Сначала им понравился Parc de Montseny: далеко от города, много воды, воздух — хоть в бутылки разливай.
-          А потом выяснилось, что почва там уровня «попробуй выкопай — узнаешь, кто ты по жизни».
-        </p>
-        <p>
-          Идея «возить туда всё нужное из Барселоны» быстро умерла — вместе с романтикой.
-        </p>
-
-        <h2 id="lesplanes">Глава 2 — Les Planes: на карте “лесочек”, в жизни “передача про выживание”</h2>
-        <p>
-          На карте всё выглядело мило. В реальности — колючки, резкие подъёмы, спуски, насекомые,
-          и ощущение, что ты подписался на марафон боли, не читая условий.
-        </p>
-        <div class="quote">
-          <p>
-            Их маршрут звучал как плейлист: «ай», «бля», «сука», «кто укусил», «почему всё режется».
+        <article class="card article" id="story">
+          <p class="lead">
+            Когда нормальные люди покупают тетрадки, эти двое покупают “надежду в упаковке”.
+            План звучал красиво: “посадим в лесу — никто не увидит”.
+            <span class="muted">Лес тоже так подумал. И начал смотреть сериал.</span>
           </p>
-          <small>— путевые заметки (неофициальные)</small>
+
+          <figure class="photo" data-cap="Лес. Красиво, да? А теперь представь это ночью, мокрым и с ощущением, что тебя оценивают все ветки.">
+            <span class="scribble"><strong>локация:</strong> “кажется, тут кто-то живёт”</span>
+            <img src="photos/01-forest.jpg" alt="Лесной овраг и плотная зелень" />
+            <figcaption>Лес. Красиво, да? А теперь представь это ночью, мокрым и с ощущением, что тебя оценивают все ветки.</figcaption>
+          </figure>
+
+          <div class="quote">
+            <p><b>Правило:</b> если идея пришла “сама” — она пришла не одна. С ней ещё придут: колючки, дождь и кабан-модератор.</p>
+            <small>— внутренний голос, который обычно отвечает за провалы</small>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2 id="step0">Шаг 0 — Идея (ошибка №1, но очень бодрая)</h2>
+          <p>
+            Всё начинается стандартно: “хочется шмали и денег” + “мы же умные”.
+            Сразу появляется мысль: <b>лес</b>. Потому что в голове лес — это приватный сервер без админов.
+          </p>
+
+          <div class="callout">
+            <span class="badge">мем-сводка</span>
+            <p><span class="glitch" data-text="надежда">надежда</span> была такая громкая, что её услышали даже корни и начали готовить ловушки.</p>
+          </div>
+
+          <h2 id="montseny">Montseny: романтика, пока не познакомился с почвой</h2>
+          <p>
+            Сначала понравился Parc de Montseny: вода, ручьи, красота.
+            Потом выяснилось, что земля там — смесь камня, корней и “иди работай”.
+          </p>
+
+          <h2 id="lesplanes">Les Planes: на карте “милый лесочек”, в жизни “Амазонка: Directors Cut”</h2>
+          <p>
+            На картах — проход. В реальности — всё режется, колется, мокнет, кусается.
+            Подъёмы/спуски такие, будто архитектор местности — демон-альпинист.
+          </p>
+
+          <figure class="photo" data-cap="Спуск к споту. Вниз — легко. Назад — пусть молится ваш пресс.">
+            <span class="scribble"><strong>аттракцион:</strong> “лестница боли”</span>
+            <img src="photos/03-stairs.jpg" alt="Длинная лестница/дорога вниз в зелёной зоне" />
+            <figcaption>Спуск к споту. Вниз — легко. Назад — пусть молится ваш пресс.</figcaption>
+          </figure>
+
+          <h2 id="spring">Весна: “проверим, выросло ли чудо” (спойлер: нет)</h2>
+          <p>
+            Первый заход был в стиле “импровизация”: минимум подготовки, максимум энтузиазма.
+            Потом вернулись — и получили ровно то, что заслужили: <b>ничего</b>.
+          </p>
+
+          <figure class="photo" data-cap="Вот так выглядит “мы выкопали ямку”. Земля: 1. Школьники: 0.">
+            <span class="scribble"><strong>режим:</strong> “лопата сломалась”</span>
+            <img src="photos/05-hole.jpg" alt="Яма в земле крупным планом" />
+            <figcaption>Вот так выглядит “мы выкопали ямку”. Земля: 1. Школьники: 0.</figcaption>
+          </figure>
+
+          <h2 id="restart">Рестарт: “теперь делаем красиво” (любимая фраза перед новым провалом)</h2>
+          <p>
+            Вторая закупка — уже как у серьёзных людей. Появилось ощущение, что теперь вы “команда проекта”.
+            Лес кивнул и начал готовить сезонный финал.
+          </p>
+
+          <div class="grid" id="gallery">
+            <div class="thumb" data-cap="Закупка. Когда ты думаешь, что ты теперь персонаж из RPG, но ты всё ещё школьник.">
+              <img src="photos/07-supplies.jpg" alt="Набор удобрений и упаковки" />
+              <span>“мы почти профи”</span>
+            </div>
+            <div class="thumb" data-cap="Домашний этап. Без кабанов, без штормов, с иллюзией контроля.">
+              <img src="photos/08-homeplants.jpg" alt="Несколько растений в горшках дома" />
+              <span>“домашние дети”</span>
+            </div>
+            <div class="thumb" data-cap="Лайфстайл. Потому что любой проект должен иметь “атмосферу”.">
+              <img src="photos/06-desk.jpg" alt="Стол с аксессуарами" />
+              <span>“креативный отдел”</span>
+            </div>
+            <div class="thumb" data-cap="Полевые работы. Два человека, ручей и чувство: “а что мы вообще делаем”.">
+              <img src="photos/04-digging.jpg" alt="Двое людей копают у ручья" />
+              <span>“полевые работы”</span>
+            </div>
+          </div>
+
+          <h2 id="boar">Ураган, ночь и кабан: главный босс сезона</h2>
+          <p>
+            Они поехали проверить “как там дела” в тот вечер, когда всё мокрое, темнеет и скользит.
+            На месте — природная ревизия.  
+            А потом появился <b class="glitch" data-text="кабан">кабан</b>. Стоит. Смотрит. Рычит.
+          </p>
+
+          <div class="quote">
+            <p><b>Оружие:</b> лопата. <b>План:</b> отсутствует. <b>Смысл жизни:</b> резко появился.</p>
+            <small>— краткое содержание сцены “нам уже не до проекта”</small>
+          </div>
+
+          <h2 id="finale">Финал: сентябрь и каталонские пираты</h2>
+          <p>
+            В сентябре они пришли “за финалом” — и получили финал без титров:
+            всё разрыто, всё вынесено, даже инструменты.  
+            Обидно так, что хочется написать жалобу… деревьям.
+          </p>
+
+          <figure class="photo" data-cap="Маленький росток. Большие амбиции. И где-то рядом — реальность с дубинкой.">
+            <span class="scribble"><strong>жанр:</strong> “надежда”</span>
+            <img src="photos/02-seedling.jpg" alt="Маленький росток в земле" />
+            <figcaption>Маленький росток. Большие амбиции. И где-то рядом — реальность с дубинкой.</figcaption>
+          </figure>
+
+          <div class="divider"></div>
+
+          <h2 id="moral">Вывод</h2>
+          <p>
+            Партизанский лесной “аутдор-план” в Каталонии — это когда против тебя играют:
+            рельеф, погода, насекомые, кабаны и люди, которые украдут даже то, что не полезно.
+          </p>
+          <p class="muted">
+            Зато остаётся история. Громкая. Смешная. Жёсткая. И с кабаном в роли педагога.
+          </p>
+
+          <div class="callout">
+            <span class="badge">мораль</span>
+            <p>Иногда жизнь даёт урок. Иногда — кабан. Иногда оба сразу, и ты без конспекта.</p>
+          </div>
+
+          <p class="muted" id="author">
+            Автор: <b>@saintvoid911</b> • NOTES FROM CATALONIA • “проект закрыт по причине леса”
+          </p>
+        </article>
+      </section>
+
+      <aside class="aside">
+        <div class="card pad toc">
+          <h3>Оглавление</h3>
+          <nav id="toc">
+            <a href="#top">Вверх</a>
+            <a href="#step0">Шаг 0 — Идея</a>
+            <a href="#montseny">Montseny</a>
+            <a href="#lesplanes">Les Planes</a>
+            <a href="#spring">Весна</a>
+            <a href="#restart">Рестарт</a>
+            <a href="#boar">Кабан</a>
+            <a href="#finale">Финал</a>
+            <a href="#moral">Вывод</a>
+            <a href="#gallery">Фотки</a>
+          </nav>
         </div>
-        <p>
-          До ручья они всё-таки добрались. Спот выглядел как мечта: два холма, заросли, вода, тишина.
-          Вот только земля была из категории «нет».
-        </p>
 
-        <h2 id="spring">Глава 3 — Весна: ожидание чуда, когда ты сам его отменил</h2>
-        <p>
-          Они вернулись позже — и, сюрприз, ничего не увидели.  
-          Не потому что «плохая карма», а потому что план был в жанре «авось».
-        </p>
-        <p class="muted">
-          Это был не провал. Это был трейлер провала — бесплатный.
-        </p>
+        <div class="card pad">
+          <div class="hud" id="hud">
+            <div class="hdr">
+              <span>RPG HUD</span>
+              <span class="live">LIVE</span>
+            </div>
 
-        <h2 id="restart">Глава 4 — Рестарт: «Теперь мы почти профессионалы»</h2>
-        <p>
-          Во второй заход они подошли “серьёзнее”: с ощущением, что теперь всё под контролем.
-          Выглядит это всегда одинаково: уверенность + лес = лес победит.
-        </p>
+            <div class="bars">
+              <diviter class="barrow">
+                <div class="label"><span>HP: Кабан</span><span id="boarHpText">100%</span></div>
+                <div class="meter boar"><i id="boarHp" style="width:100%"></i></div>
+              </div>
+              <div class="barrow">
+                <div class="label"><span>HP: Школьники</span><span id="kidsHpText">100%</span></div>
+                <div class="meter"><i id="kidsHp" style="width:100%"></i></div>
+              </div>
+              <div class="barrow">
+                <div class="label"><span>Надежда</span><span id="hopeText">100%</span></div>
+                <div class="meter"><i id="hope" style="width:100%"></i></div>
+              </div>
+            </div>
 
-        <h2 id="boar">Глава 5 — Ураган, ночь и кабан (главный босс сезона)</h2>
-        <p>
-          Они поехали проверить “как там дела” в один из тех вечеров, когда Барселона превращается в мокрую драму:
-          ветер, вода, темнеет, всё скользит, всё липнет, и ты сам себе противник.
-        </p>
-        <p>
-          На месте оказалось, что природа провела ревизию.  
-          А потом появился он — <b>кабан</b>. Стоит. Смотрит. Рычит.  
-          Ровно как охранник возле платного туалета: «платить будете?» — только без опций.
-        </p>
-        <div class="quote">
-          <p><b>Оружие:</b> лопата. <b>План:</b> отсутствует. <b>Шансы:</b> обсуждать неприлично.</p>
-          <small>— краткое содержание сцены “мы резко всё поняли”</small>
-        </div>
-        <p>
-          Дальше было кино: крики, камни, паника, падения, “всё, бежим”, и внезапное понимание,
-          что сейчас важнее всего — просто выйти живыми.
-        </p>
+            <div class="debuffs" id="debuffs">
+              <span class="chip bad">дебафф: колючки</span>
+              <span class="chip bad">дебафф: грязь</span>
+              <span class="chip bad">дебафф: “мы шарим”</span>
+              <span class="chip good">бафф: упрямство</span>
+            </div>
 
-        <h2 id="home">Глава 6 — Домашние дети и капля здравого смысла</h2>
-        <p>
-          После встречи с местной “службой безопасности” остатки плана стали жить дома — на солнце, спокойно,
-          без дикого леса и с нулевым шансом встретить кабана в коридоре.
-        </p>
+            <div class="parabox">
+              <div class="k">
+                <span>уровень паранойи</span>
+                <span><b id="paranoiaValue">0%</b></span>
+              </div>
+              <input id="paranoiaSlider" type="range" min="0" max="100" value="0" />
+              <div class="hint muted" id="paranoiaHint">Пока спокойно. Лес просто смотрит.</div>
+            </div>
 
-        <h2 id="return">Глава 7 — Возвращение в лес и режим “само как-нибудь”</h2>
-        <p>
-          Летом они вернулись. Уже без героизма и без лишней самоуверенности.
-          Сделали дела, ушли и… подзабыли, потому что мозг подростка умеет переключаться моментально.
-        </p>
-
-        <h2 id="finale">Финал — сентябрь: «клад» нашли не они</h2>
-        <p>
-          В начале сентября они снова приехали — уже в атмосфере приключения, где всё немного на веселе,
-          всё смешно, пока ты не падаешь в колючки и не ищешь улетевший рюкзак в кустах.
-        </p>
-        <p>
-          А на месте — пустота. Всё разрыто. Всё вынесено. Даже инструменты.  
-          Обидно так, что хочется позвонить в лес и попросить «вернуть как было».  
-          Но лес, как известно, трубку не берёт.
-        </p>
-
-        <div class="divider"></div>
-
-        <h2 id="moral">Вывод (без занудства)</h2>
-        <p>
-          Партизанские “лесные планы” в Каталонии чаще заканчиваются тем, что <b>происходит вообще всё</b>:
-          дикая природа, погода, люди, рельеф, внезапные “хозяева территории”.
-        </p>
-        <p class="muted">
-          Но есть плюс: воспоминания действительно на всю жизнь. Особенно те, где кабан — педагог.
-        </p>
-
-        <div class="quote">
-          <p><b>Мораль:</b> иногда жизнь даёт урок. Иногда — кабан. Иногда оба сразу, и ты без конспекта.</p>
-          <small>— NOTES FROM CATALONIA</small>
+            <div class="counters">
+              <div class="counter">
+                <div class="k">падения</div>
+                <div class="v" id="falls">0</div>
+              </div>
+              <div class="counter">
+                <div class="k">укусы</div>
+                <div class="v" id="bites">0</div>
+              </div>
+              <div class="counter">
+                <div class="k">мат</div>
+                <div class="v" id="swears">0</div>
+              </div>
+              <div class="counter">
+                <div class="k">“ай бля”</div>
+                <div class="v" id="aiblya">0</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <p id="author" class="muted">
-          Автор: <b>@saintvoid911</b> • Формат: заметки • Время чтения: пока не начнёшь всматриваться в кусты по пути 😄
-        </p>
+        <div class="card pad">
+          <div style="font-family:var(--mono); color:var(--muted); font-weight:950; letter-spacing:.10em; text-transform:uppercase; font-size:12px;">
+            Горячие клавиши
+          </div>
+          <div class="muted" style="margin-top:10px; font-size:13px;">
+            <b style="color:var(--yellow)">L</b> — ссылка на раздел<br/>
+            <b style="color:var(--yellow)">G</b> — к фоткам<br/>
+            <b style="color:var(--yellow)">M</b> — мем-комментарий<br/>
+            <b style="color:var(--yellow)">V</b> — VHS режим<br/>
+            <b style="color:var(--yellow)">Esc</b> — закрыть фото/тост/алерт
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class="foot">
+        <div>© NOTES FROM CATALONIA • “лес — это не место, это настроение”</div>
+        <div>если слышишь хрюк — это не “саунд-дизайн”, это сюжет</div>
       </div>
-    </section>
+    </footer>
+  </div>
 
-    <aside class="aside">
-      <div class="card toc" aria-label="Оглавление">
-        <h3>Оглавление</h3>
-        <nav id="toc">
-          <a href="#top">Вверх</a>
-          <a href="#step0">Шаг 0 — Идея</a>
-          <a href="#montseny">Montseny</a>
-          <a href="#lesplanes">Les Planes</a>
-          <a href="#spring">Весна</a>
-          <a href="#restart">Рестарт</a>
-          <a href="#boar">Ураган и кабан</a>
-          <a href="#home">Домашние дети</a>
-          <a href="#return">Возвращение</a>
-          <a href="#finale">Финал</a>
-          <a href="#moral">Вывод</a>
-        </nav>
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="box" role="dialog" aria-modal="true">
+      <img id="lightboxImg" alt="" />
+      <div class="cap">
+        <span id="lightboxCap">—</span>
+        <button class="xbtn" id="lightboxClose" type="button">CLOSE [ESC]</button>
       </div>
-
-      <div class="facts">
-        <div class="fact">
-          <div class="label">Жанр</div>
-          <div class="value">Комедия ошибок + триллер «кто шуршит в кустах»</div>
-        </div>
-        <div class="fact">
-          <div class="label">Главный антагонист</div>
-          <div class="value"><span class="danger">Кабан</span> (и его PR-отдел: дождь, колючки, гравий)</div>
-        </div>
-        <div class="fact">
-          <div class="label">Самая сильная эмоция</div>
-          <div class="value">«Нам было уже не до “плана”»</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3 style="margin:0 0 10px; font-size:14px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);">
-          Хроника сезона
-        </h3>
-        <ul class="timeline">
-          <li>
-            <div class="when">зима</div>
-            <div class="what">
-              <h3>Появляется идея</h3>
-              <p>Сильно громкая, слабо продуманная. Классика.</p>
-            </div>
-          </li>
-          <li>
-            <div class="when">весна</div>
-            <div class="what">
-              <h3>Первый заход</h3>
-              <p>Лес смотрит, как человек учится на своих ошибках. Не учится.</p>
-            </div>
-          </li>
-          <li>
-            <div class="when">конец весны</div>
-            <div class="what">
-              <h3>Второй заход</h3>
-              <p>Уверенность растёт быстрее, чем шансы.</p>
-            </div>
-          </li>
-          <li>
-            <div class="when">шторм</div>
-            <div class="what">
-              <h3>Кабан-сцена</h3>
-              <p>Серия, после которой меняется мировоззрение.</p>
-            </div>
-          </li>
-          <li>
-            <div class="when">сентябрь</div>
-            <div class="what">
-              <h3>Финал</h3>
-              <p>«Клад» нашли другие. Инструменты тоже.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </aside>
-  </main>
-
-  <footer>
-    <div class="foot">
-      <div>© NOTES FROM CATALONIA • «истории, которые пахнут лесом и плохими решениями»</div>
-      <div>Горячие клавиши: <span style="font-family:var(--mono)">T</span> — тема, <span style="font-family:var(--mono)">L</span> — ссылка на раздел</div>
     </div>
-  </footer>
+  </div>
 
   <script>
-    // Theme
-    const root = document.documentElement;
-    const themeBtn = document.getElementById('toggleTheme');
-    const savedTheme = localStorage.getItem('nfc_theme');
-    if (savedTheme) root.setAttribute('data-theme', savedTheme);
-
-    function toggleTheme(){
-      const current = root.getAttribute('data-theme') || 'dark';
-      const next = current === 'light' ? 'dark' : 'light';
-      root.setAttribute('data-theme', next);
-      localStorage.setItem('nfc_theme', next);
+    // ===== Progress bar =====
+    const bar = document.getElementById('bar');
+    function onScroll(){
+      const doc = document.documentElement;
+      const top = doc.scrollTop || document.body.scrollTop;
+      const h = doc.scrollHeight - doc.clientHeight;
+      const pct = h > 0 ? (top / h) * 100 : 0;
+      bar.style.width = pct.toFixed(2) + '%';
     }
-    themeBtn.addEventListener('click', toggleTheme);
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
 
-    // Copy deep link to current visible section
-    const copyBtn = document.getElementById('copyLink');
+    // ===== TOC active + deep link =====
+    const tocLinks = [...document.querySelectorAll('#toc a')];
     function currentSectionId(){
-      const ids = [...document.querySelectorAll('h2[id], article.hero[id]')].map(el => el.id);
+      const els = [...document.querySelectorAll('#story h2[id], #top, #gallery')];
       let best = 'top';
       let bestTop = -Infinity;
-      for (const id of ids){
-        const el = document.getElementById(id);
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= 120 && rect.top > bestTop){
-          bestTop = rect.top;
-          best = id;
+      for (const el of els){
+        const r = el.getBoundingClientRect();
+        if (r.top <= 120 && r.top > bestTop){
+          bestTop = r.top;
+          best = el.id || 'top';
         }
       }
       return best;
     }
+    function updateTOC(){
+      const id = currentSectionId();
+      tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      history.replaceState(null, '', '#' + id);
+    }
+    window.addEventListener('scroll', updateTOC, {passive:true});
+    updateTOC();
+
+    // ===== Copy link =====
+    const copyBtn = document.getElementById('copyLink');
     async function copyLink(){
       const id = currentSectionId();
       const url = new URL(window.location.href);
       url.hash = id;
       try{
         await navigator.clipboard.writeText(url.toString());
-        copyBtn.innerHTML = '✅ <span>скопировано</span> <kbd>L</kbd>';
-        setTimeout(()=> copyBtn.innerHTML = '🔗 <span>ссылка</span> <kbd>L</kbd>', 900);
+        copyBtn.innerHTML = '✅ ссылка <kbd>L</kbd>';
+        setTimeout(()=> copyBtn.innerHTML = '🔗 ссылка <kbd>L</kbd>', 900);
       }catch(e){
-        alert('Не смог скопировать (браузер капризничает). Просто возьми ссылку из адресной строки 🙂');
+        alert('Браузер не дал скопировать. Возьми ссылку из адресной строки 🙂');
       }
     }
     copyBtn.addEventListener('click', copyLink);
 
-    // Progress bar
-    const bar = document.getElementById('bar');
-    function onScroll(){
-      const doc = document.documentElement;
-      const scrollTop = doc.scrollTop || document.body.scrollTop;
-      const scrollHeight = doc.scrollHeight - doc.clientHeight;
-      const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-      bar.style.width = pct.toFixed(2) + '%';
-    }
-    window.addEventListener('scroll', onScroll, {passive:true});
-    onScroll();
+    // ===== Gallery button =====
+    document.getElementById('goGallery').addEventListener('click', ()=> {
+      document.getElementById('gallery').scrollIntoView({behavior:'smooth', block:'start'});
+    });
 
-    // TOC active state
-    const tocLinks = [...document.querySelectorAll('#toc a')];
-    const sectionIds = tocLinks.map(a => (a.getAttribute('href')||'').replace('#','')).filter(Boolean);
-    function updateTOC(){
+    // ===== VHS toggle =====
+    const toggleVHSBtn = document.getElementById('toggleVHS');
+    function toggleVHS(){
+      const cur = document.body.getAttribute('data-vhs') || '1';
+      const next = cur === '1' ? '0' : '1';
+      document.body.setAttribute('data-vhs', next);
+      toggleVHSBtn.innerHTML = (next === '1' ? '📼 VHS <kbd>V</kbd>' : '📼 VHS: OFF <kbd>V</kbd>');
+    }
+    toggleVHSBtn.addEventListener('click', toggleVHS);
+
+    // ===== Lightbox =====
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCap = document.getElementById('lightboxCap');
+    const lightboxClose = document.getElementById('lightboxClose');
+
+    function openLightbox(src, cap, alt){
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || '';
+      lightboxCap.textContent = cap || '';
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+    }
+    function closeLightbox(){
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      lightboxImg.src = '';
+    }
+    document.querySelectorAll('.photo img, .thumb img').forEach(img => {
+      img.addEventListener('click', () => {
+        const cap = img.closest('[data-cap]')?.getAttribute('data-cap') || img.alt || '';
+        openLightbox(img.getAttribute('src'), cap, img.alt);
+      });
+    });
+    lightbox.addEventListener('click', (e)=> { if (e.target === lightbox) closeLightbox(); });
+    lightboxClose.addEventListener('click', closeLightbox);
+
+    // ===== BOAR ALERT logic =====
+    const boarAlert = document.getElementById('boarAlert');
+    const boarAlertClose = document.getElementById('boarAlertClose');
+    let boarAlertMuted = false;
+
+    boarAlertClose.addEventListener('click', ()=> {
+      boarAlert.classList.remove('show');
+      boarAlertMuted = true;
+      setTimeout(()=> boarAlertMuted = false, 120000);
+    });
+
+    const boarHeader = document.getElementById('boar');
+    const io = new IntersectionObserver((entries)=>{
+      const e = entries[0];
+      if (!e) return;
+
+      if (e.isIntersecting && !boarAlertMuted){
+        boarAlert.classList.add('show');
+        bumpHUD(2);
+      } else {
+        boarAlert.classList.remove('show');
+      }
+    }, { threshold: 0.25 });
+
+    if (boarHeader) io.observe(boarHeader);
+
+    // ===== Meme Toast =====
+    const toast = document.getElementById('toast');
+    const toastWho = document.getElementById('toastWho');
+    const toastText = document.getElementById('toastText');
+    const toastMini = document.getElementById('toastMini');
+    const toastClose = document.getElementById('toastClose');
+    const spawnToastBtn = document.getElementById('spawnToast');
+
+    const memeLines = [
+      { who: "ЛЕС.COM", text: "Ваш запрос принят. В ответ выдаём: колючки, грязь и чувство вины.", tags:["#природа_не_сервис","#no_refunds"] },
+      { who: "КАБАН MOD", text: "Пост удалён. Пользователь: 'школьники'. Причина: 'слишком уверенные'.", tags:["#модерация","#рык"] },
+      { who: "КОРОНИДЫ™", text: "Вы думали это тропинка? Нет. Это курс по выживанию без преподавателя.", tags:["#курс","#болит"] },
+      { who: "ГРАВИЙ", text: "Я не злой. Я просто везде.", tags:["#вездесущий","#сыпучий"] },
+      { who: "ВЕТКИ-ОХРАНА", text: "Проход платный. Оплата: кожа, нервы, пакет.", tags:["#проход","#счёт_в_колючках"] },
+      { who: "ДОЖДЬ", text: "Я пришёл. Ты не готов. Это нормально.", tags:["#классика","#шторм"] },
+      { who: "РЮКЗАК", text: "Я улетел. Ищи меня в дебрях. Я тест на характер.", tags:["#квест","#где_я"] },
+      { who: "НАДЕЖДА", text: "Я была 100%. Теперь я просто легенда.", tags:["#rip","#помним"] },
+      { who: "ЛОПАТА", text: "Я сломалась не потому что слабая. А потому что вы романтики.", tags:["#металл","#поэзия"] },
+      { who: "КАТАЛОНСКИЕ ПИРАТЫ", text: "Спасибо за инструменты. Мы тоже любим минимализм: оставить вам ничего.", tags:["#сентябрь","#минус_инвентарь"] },
+    ];
+
+    function showToast(line){
+      toastWho.textContent = line.who;
+      toastText.textContent = line.text;
+      toastMini.innerHTML = '';
+      (line.tags || []).forEach(t=>{
+        const s = document.createElement('span');
+        s.className = 'chip';
+        s.textContent = t;
+        toastMini.appendChild(s);
+      });
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=> toast.classList.remove('show'), 4200);
+    }
+
+    function randomToast(){
+      const line = memeLines[Math.floor(Math.random()*memeLines.length)];
+      showToast(line);
+      incCounter('swears', rand(1,3));
+      incCounter('aiblya', rand(0,2));
+      // паранойя чуть вверх, потому что “уведомления” — это стресс
+      setParanoia(state.paranoia + rand(1,3), true);
+      tickStats();
+    }
+
+    spawnToastBtn.addEventListener('click', randomToast);
+    toastClose.addEventListener('click', ()=> toast.classList.remove('show'));
+
+    // ===== HUD + counters =====
+    const boarHp = document.getElementById('boarHp');
+    const kidsHp = document.getElementById('kidsHp');
+    const hope = document.getElementById('hope');
+    const boarHpText = document.getElementById('boarHpText');
+    const kidsHpText = document.getElementById('kidsHpText');
+    const hopeText = document.getElementById('hopeText');
+
+    const fallsEl = document.getElementById('falls');
+    const bitesEl = document.getElementById('bites');
+    const swearsEl = document.getElementById('swears');
+    const aiblyaEl = document.getElementById('aiblya');
+
+    const paranoiaSlider = document.getElementById('paranoiaSlider');
+    const paranoiaValue = document.getElementById('paranoiaValue');
+    const paranoiaHint = document.getElementById('paranoiaHint');
+
+    const state = {
+      falls: 0,
+      bites: 0,
+      swears: 0,
+      aiblya: 0,
+      kidsHP: 100,
+      boarHP: 100,
+      hope: 100,
+      paranoia: 0,
+      boarPhase: 0,
+      lockParanoia: false, // когда юзер руками трогает — даём ему контроль на время
+      lockUntil: 0,
+    };
+
+    function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+    function incCounter(key, n=1){
+      state[key] += n;
+      if (state[key] < 0) state[key] = 0;
+      if (key === 'falls') fallsEl.textContent = state.falls;
+      if (key === 'bites') bitesEl.textContent = state.bites;
+      if (key === 'swears') swearsEl.textContent = state.swears;
+      if (key === 'aiblya') aiblyaEl.textContent = state.aiblya;
+    }
+
+    function setBar(el, txtEl, value){
+      const v = Math.max(0, Math.min(100, value));
+      el.style.width = v.toFixed(0) + '%';
+      txtEl.textContent = v.toFixed(0) + '%';
+    }
+
+    function tickStats(){
+      setBar(kidsHp, kidsHpText, state.kidsHP);
+      setBar(boarHp, boarHpText, state.boarHP);
+      setBar(hope, hopeText, state.hope);
+    }
+    tickStats();
+
+    function bumpHUD(level=1){
+      const hud = document.getElementById('hud');
+      hud.animate([
+        { transform: 'translate(0,0) rotate(0deg)' },
+        { transform: `translate(${level}px,-${level}px) rotate(-0.2deg)` },
+        { transform: `translate(-${level}px,${level}px) rotate(0.2deg)` },
+        { transform: 'translate(0,0) rotate(0deg)' },
+      ], { duration: 240, iterations: 1 });
+    }
+
+    // ===== Paranoia control =====
+    function paranoiaLabel(v){
+      if (v < 10) return "Пока спокойно. Лес просто смотрит.";
+      if (v < 25) return "Что-то шуршит. Может ветер. Может сюжет.";
+      if (v < 45) return "Ты слишком внимательно слушаешь кусты.";
+      if (v < 65) return "Паранойя включилась. Глаз дёргается (символически).";
+      if (v < 85) return "Сохраняйся. Проверяй спину. Доверяй никому.";
+      return "Ты уже слышишь хрюк в MP3. Это не нормально, но очень по-нашему.";
+    }
+
+    function applyParanoiaCSS(v){
+      document.documentElement.style.setProperty('--paranoia', String(v));
+      paranoiaValue.textContent = `${v.toFixed(0)}%`;
+      paranoiaHint.textContent = paranoiaLabel(v);
+    }
+
+    function setParanoia(v, fromAuto=false){
+      const now = Date.now();
+      // если пользователь крутил ползунок недавно — авто не мешает
+      if (fromAuto && state.lockParanoia && now < state.lockUntil) return;
+
+      state.paranoia = Math.max(0, Math.min(100, v));
+      paranoiaSlider.value = String(state.paranoia);
+      applyParanoiaCSS(state.paranoia);
+    }
+
+    paranoiaSlider.addEventListener('input', ()=>{
+      state.lockParanoia = true;
+      state.lockUntil = Date.now() + 20000; // 20 сек “мой контроль”
+      setParanoia(Number(paranoiaSlider.value), false);
+    });
+
+    // старт
+    applyParanoiaCSS(0);
+
+    // ===== Scroll-based “сюжет” =====
+    function storyEngine(){
       const id = currentSectionId();
-      tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
-      history.replaceState(null, '', '#' + id);
-    }
-    window.addEventListener('scroll', () => { updateTOC(); }, {passive:true});
-    updateTOC();
 
-    // Hotkeys
+      // базовое авто-нарастание по сценам
+      let targetP = 0;
+      if (id === 'top' || id === 'step0' || id === 'montseny') targetP = 6;
+      if (id === 'lesplanes') targetP = 22;
+      if (id === 'spring') targetP = 36;
+      if (id === 'restart') targetP = 28; // ложная уверенность успокаивает
+      if (id === 'boar') targetP = 88;
+      if (id === 'finale') targetP = 52;
+      if (id === 'moral') targetP = 18;
+
+      // плавно тянем к targetP
+      setParanoia(state.paranoia + (targetP - state.paranoia) * 0.04, true);
+
+      // сюжетные триггеры (как раньше)
+      if (id === 'spring' && state.boarPhase < 1){
+        state.boarPhase = 1;
+        state.hope -= rand(18,28);
+        incCounter('swears', rand(2,5));
+        incCounter('aiblya', rand(2,6));
+        incCounter('falls', rand(1,3));
+        showToast({ who:"БЕТА-ТЕСТ", text:"Ничего не выросло. Поздравляем: вы прошли вводный уровень разочарования.", tags:["#tutorial","#ничего"] });
+        tickStats();
+      }
+
+      if (id === 'restart' && state.boarPhase < 2){
+        state.boarPhase = 2;
+        state.hope += rand(12,18);
+        showToast({ who:"САМОУВЕРЕННОСТЬ", text:"Бафф получен: 'мы теперь эксперты'. Длительность: до первого дождя.", tags:["#бафф","#короткий"] });
+        tickStats();
+      }
+
+      if (id === 'boar' && state.boarPhase < 3){
+        state.boarPhase = 3;
+        state.kidsHP -= rand(22,34);
+        state.boarHP -= rand(0,6);
+        state.hope -= rand(28,40);
+        incCounter('falls', rand(3,7));
+        incCounter('bites', rand(1,4));
+        incCounter('swears', rand(8,16));
+        incCounter('aiblya', rand(6,14));
+        showToast({ who:"КАБАН MOD", text:"Вы были временно забанены с территории. Причина: 'слишком смелые'.", tags:["#рык","#паника"] });
+        bumpHUD(2);
+        // резко в паранойю
+        setParanoia(Math.max(state.paranoia, 88), true);
+        tickStats();
+      }
+
+      if (id === 'finale' && state.boarPhase < 4){
+        state.boarPhase = 4;
+        state.hope = Math.min(state.hope, rand(6,14));
+        showToast({ who:"СЕНТЯБРЬ", text:"Спот разрыт. Инструменты исчезли. Даже лопату унесли. Лес: 'красиво'.", tags:["#финал","#минус_инвентарь"]});
+        tickStats();
+      }
+    }
+
+    window.addEventListener('scroll', ()=> { storyEngine(); }, {passive:true});
+    storyEngine();
+
+    // ===== tiny ambient randomness =====
+    setInterval(()=>{
+      const id = currentSectionId();
+      if (['lesplanes','spring','boar'].includes(id) && Math.random() < 0.35){
+        incCounter('bites', rand(0,2));
+        incCounter('falls', rand(0,1));
+        if (Math.random() < 0.25){
+          showToast({ who:"НАСЕКОМЫЕ", text:"Уведомление: вас кто-то укусил. Кто — не скажем. Это квест.", tags:["#комары","#паук?"]});
+          setParanoia(state.paranoia + rand(1,4), true);
+        }
+        state.hope -= rand(0,2);
+        tickStats();
+      }
+    }, 5500);
+
+    // ===== Hotkeys =====
     window.addEventListener('keydown', (e) => {
       if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-      if (e.key.toLowerCase() === 't') toggleTheme();
       if (e.key.toLowerCase() === 'l') copyLink();
+      if (e.key.toLowerCase() === 'g') document.getElementById('gallery').scrollIntoView({behavior:'smooth', block:'start'});
+      if (e.key.toLowerCase() === 'm') randomToast();
+      if (e.key.toLowerCase() === 'v') toggleVHS();
+      if (e.key === 'Escape'){
+        closeLightbox();
+        toast.classList.remove('show');
+        boarAlert.classList.remove('show');
+      }
     });
   </script>
 </body>
